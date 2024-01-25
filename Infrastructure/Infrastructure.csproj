@@ -10,7 +10,6 @@
     <Folder Include="Data\" />
     <Folder Include="Dtos\" />
     <Folder Include="Services\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
