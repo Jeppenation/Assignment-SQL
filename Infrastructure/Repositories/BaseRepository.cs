@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Contexts;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -15,12 +16,12 @@ public abstract class BaseRepository<TEntity> where TEntity : class
 
 
     // Create
-    public virtual TEntity Create(TEntity entity)
+    public virtual async Task<TEntity> Create(TEntity entity)
     {
         try
         {
             _context.Set<TEntity>().Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
         catch (Exception e)
@@ -31,13 +32,14 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     }
 
     // Read all
-    public virtual IEnumerable<TEntity> GetAll()
+    public virtual async Task<IEnumerable<TEntity>> GetAll()
     {
-       try
+        try
         {
-            return _context.Set<TEntity>().ToList();
-       }
-       catch (Exception e)
+            return await _context.Set<TEntity>().ToListAsync();
+
+        }
+        catch (Exception e)
         {
             Debug.WriteLine(e);
             return null!;
@@ -45,17 +47,11 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     }
 
     // Read One
-    public virtual TEntity GetById(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<TEntity?> GetByIdAsync(Expression<Func<TEntity, bool>> predicate)
     {
         try
         {
-            var entity = _context.Set<TEntity>().FirstOrDefault(predicate);
-
-            if(entity != null)
-            {
-                return entity;
-            }
-            return null!;
+            return await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
         }
         catch (Exception e)
         {
@@ -64,18 +60,19 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         }
     }
 
+
     // Update
     // We use abstract here because we want to force the child classes to implement this method
     //public abstract TEntity Update(TEntity entity);
-    public virtual TEntity Update(TEntity entity)
+    public virtual async Task<TEntity> Update(TEntity entity)
     {
         try
         {
-            _context.Set<TEntity>().Find(entity);
+            await _context.Set<TEntity>().FindAsync(entity);
             if(entity != null)
             {
                 _context.Set<TEntity>().Update(entity);
-                _context.SaveChanges();
+                 await _context.SaveChangesAsync();
                 return entity;
             }
             return null!;
@@ -88,15 +85,15 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     }
 
     // Delete
-    public virtual bool Delete(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<bool> Delete(Expression<Func<TEntity, bool>> predicate)
     {
         try
         {
-            var entity = _context.Set<TEntity>().FirstOrDefault(predicate);
+            var entity = await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
             if (entity != null)
             {
                 _context.Set<TEntity>().Remove(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
             else
