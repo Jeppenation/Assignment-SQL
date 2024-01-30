@@ -16,12 +16,12 @@ public abstract class BaseRepository<TEntity> where TEntity : class
 
 
     // Create
-    public virtual async Task<TEntity> Create(TEntity entity)
+    public virtual TEntity Create(TEntity entity)
     {
         try
         {
             _context.Set<TEntity>().Add(entity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return entity;
         }
         catch (Exception e)
@@ -31,13 +31,30 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         }
     }
 
-    // Read all
-    public virtual async Task<IEnumerable<TEntity>> GetAll()
+    // Read All
+    
+    public virtual IEnumerable<TEntity> GetAll()
     {
         try
         {
-            return await _context.Set<TEntity>().ToListAsync();
+            return _context.Set<TEntity>().ToList();
+           
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+            return null!;
+        }
+    }
 
+
+    // Read one by predicate
+    public virtual TEntity Get(Expression<Func<TEntity, bool>> predicate)
+    {
+        try
+        {
+            var entity = _context.Set<TEntity>().FirstOrDefault(predicate);
+            return entity!;
         }
         catch (Exception e)
         {
@@ -46,7 +63,7 @@ public abstract class BaseRepository<TEntity> where TEntity : class
        }
     }
 
-    // Read One
+    // Read One by Id
     public virtual async Task<TEntity?> GetByIdAsync(Expression<Func<TEntity, bool>> predicate)
     {
         try
@@ -64,18 +81,21 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     // Update
     // We use abstract here because we want to force the child classes to implement this method
     //public abstract TEntity Update(TEntity entity);
-    public virtual async Task<TEntity> Update(TEntity entity)
+    public virtual TEntity Update(Expression<Func<TEntity, bool>> predicate, TEntity entity)
     {
         try
         {
-            await _context.Set<TEntity>().FindAsync(entity);
-            if(entity != null)
+            var entityToUpdate = _context.Set<TEntity>().FirstOrDefault(predicate);
+            if (entityToUpdate != null)
             {
-                _context.Set<TEntity>().Update(entity);
-                 await _context.SaveChangesAsync();
-                return entity;
+                _context.Entry(entityToUpdate).CurrentValues.SetValues(entity);
+                _context.SaveChanges();
+                return entityToUpdate;
             }
-            return null!;
+            else
+            {
+                return null!;
+            }
         }
         catch (Exception e)
         {
