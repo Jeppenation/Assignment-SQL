@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Infrastructure.Contexts;
+using Infrastructure.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,11 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class UserRepository 
+    public class UserRepository : BaseRepository<UsersEntity>
     {
+        public UserRepository(DatabaseContext context) : base(context)
+        {
+        }
     }
+
 }
