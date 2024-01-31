@@ -64,11 +64,11 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     }
 
     // Read One by Id
-    public virtual async Task<TEntity?> GetByIdAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual  Task<TEntity?> GetById(Expression<Func<TEntity, bool>> predicate)
     {
         try
         {
-            return await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
+            return  _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
         }
         catch (Exception e)
         {
@@ -105,27 +105,23 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     }
 
     // Delete
-    public virtual async Task<bool> Delete(Expression<Func<TEntity, bool>> predicate)
+    public virtual void Delete(Expression<Func<TEntity, bool>> predicate)
     {
         try
         {
-            var entity = await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
-            if (entity != null)
+            var EntityToDelete = _context.Set<TEntity>().FirstOrDefault(predicate);
+            if (EntityToDelete != null)
             {
-                _context.Set<TEntity>().Remove(entity);
-                await _context.SaveChangesAsync();
-                return true;
+                _context.Set<TEntity>().Remove(EntityToDelete);
+                _context.SaveChanges();
             }
-            else
-            {
-                return false;
-            }
+
 
         }
         catch (Exception e)
         {
             Debug.WriteLine(e);
-            return false;
+            
         }
     }
 

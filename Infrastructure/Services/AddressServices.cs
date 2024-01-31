@@ -55,10 +55,18 @@ namespace Infrastructure.Services
         }
 
         //Update
-        //public AddressesEntity UpdateAddress (string streetName, string postalCode, string city)
-        //{
-        //    var addressToUpdate = _addressRepository.Update(x => x)
-        //}
+        public AddressesEntity updateaddress(AddressesEntity addressesEntity)
+        {
+            var addresstoupdate = _addressRepository.Update(x => x.Id == addressesEntity.Id, addressesEntity);
+            return addresstoupdate;
+        }
+
+        //Delete
+        public void DeleteAddress(int id)
+        {
+             _addressRepository.Delete(x => x.Id == id);
+           
+        }
 
     }
 }
