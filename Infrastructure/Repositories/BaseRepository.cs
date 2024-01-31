@@ -104,6 +104,23 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         }
     }
 
+    // Update one
+    public virtual TEntity UpdateOne(TEntity entity)
+    {
+        try
+        {
+            // Assuming the entity has an ID or some identifier set, EF should track it.
+            _context.Set<TEntity>().Update(entity);
+            _context.SaveChanges();
+            return entity;
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+            return null!;
+        }
+    }
+
     // Delete
     public virtual void Delete(Expression<Func<TEntity, bool>> predicate)
     {

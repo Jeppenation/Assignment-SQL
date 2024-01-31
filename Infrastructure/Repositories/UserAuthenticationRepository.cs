@@ -7,6 +7,7 @@ namespace Infrastructure.Repositories
     {
         public UserAuthenticationRepository(DatabaseContext context) : base(context)
         {
+
         }
     }
 
